@@ -18,5 +18,10 @@ async function render_account_info(token) {
 
   response.json().then((data) => {
     $("#logged-in-as").text(`Logado como ${data.username}`);
+    data.tasks.map((task) => {
+      $("#task-list").append(`<div>
+      <p>${task.title}</p>
+      </div>`);
+    });
   });
 }

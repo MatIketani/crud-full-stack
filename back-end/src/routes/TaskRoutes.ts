@@ -53,7 +53,7 @@ router.route("/task/:id").patch(
   },
 );
 
-router.route("/task/:id").get(
+router.route("/task/:id").delete(
   (req: any, res: Response, next: NextFunction) => {
     return AuthVar.handle(req, res, next);
   },

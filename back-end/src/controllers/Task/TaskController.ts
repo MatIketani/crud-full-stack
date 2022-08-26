@@ -104,6 +104,7 @@ export class DeleteTask implements Controller {
       }
 
       Task.destroy({ where: { id: task.getId } });
+      res.status(200).json({ message: "TASK_DELETED" });
     } catch (error) {
       res.status(500).json({ message: "INTERNAL_ERROR" });
       console.log(error);

@@ -55,6 +55,8 @@ function validate_fields(username, password, mode) {
   }
 }
 
+async function check_jwt_valid(token) {}
+
 async function login(username, password) {
   const response = await fetch(`${API_URL}/login`, {
     method: "POST",
