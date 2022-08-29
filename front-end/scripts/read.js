@@ -25,18 +25,17 @@ $(document).ready(() => {
 });
 
 async function check_jwt_valid(token) {
-  const response = await fetch(`${API_URL}/user`, {
+  let response = await fetch(`${API_URL}/user`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 
-  response.json().then((data) => {
-    if (data.message === "ACCESS_DENIED") {
-      window.location.replace("../pages/index.html");
-    }
-  });
+  response = await response.json();
+  if (response.message === "ACCESS_DENIED") {
+    window.location.replace("../pages/index.html");
+  }
 }
 
 async function render_task(token, task_id) {

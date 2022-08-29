@@ -19,19 +19,18 @@ $(document).ready(() => {
 });
 
 async function render_account_info(token) {
-  const response = await fetch(`${API_URL}/user`, {
+  let response = await fetch(`${API_URL}/user`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
+  response = await response.json();
 
-  response.json().then((data) => {
-    $("#logged-in-as").text(`Logado como ${data.username}`);
-    data.tasks.map((task) => {
-      $("#task-list").append(`<div class="task">
+  $("#logged-in-as").text(`Logado como ${response.username}`);
+  response.tasks.map((task) => {
+    $("#task-list").append(`<div class="task">
       <a class="task-title" href="../pages/read.html?id=${task.id}">${task.title}</a>
       </div>`);
-    });
   });
 }
