@@ -9,7 +9,7 @@ $(document).ready(() => {
 
   const jwt_token = Cookies.get("jwt-token");
 
-  if (!jwt_token) {
+  if (!jwt_token || check_jwt_valid(jwt_token)) {
     return window.location.replace("../index.html");
   }
 
@@ -38,7 +38,21 @@ $(document).ready(() => {
   });
 });
 
-function check_jwt_valid(token) {}
+function check_jwt_valid(token) {
+  let response = await fetch(`${API_URL}/user`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  response = await response.json();
+
+  if(response.message === "ACCESS_DENIED"){
+    return false
+  }
+
+  return true
+}
 
 async function check_if_task_exists(task_id, token) {
   let response = await fetch(`${API_URL}/task/${task_id}`, {
