@@ -51,7 +51,7 @@ export class GetTask implements Controller {
       });
 
       if (!task) {
-        return res.status(400).json({ message: "NOT_FOUND" });
+        return res.status(404).json({ message: "NOT_FOUND" });
       }
 
       res.status(200).json(task);
@@ -86,7 +86,10 @@ export class UpdateTask implements Controller {
         { where: { id: id, ownerId: account_id } },
       );
       res.status(200).json({ message: "TASK_UPDATED" });
-    } catch (error) {}
+    } catch (error) {
+      res.status(500).json({ message: "INTERNAL_ERROR" });
+      console.log(error);
+    }
   }
 }
 

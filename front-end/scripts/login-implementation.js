@@ -1,6 +1,8 @@
 const API_URL = "http://localhost:3000";
 
 $(document).ready(() => {
+  const JWT_TOKEN = Cookies.get("jwt-token");
+
   $("#signin-btn").click(() => {
     var username = $("#uname-input").val();
     var password = $("#pwd-input").val();
@@ -14,6 +16,9 @@ $(document).ready(() => {
 
     return validate_fields(username, password, 2);
   });
+  if (JWT_TOKEN) {
+    check_jwt_valid(JWT_TOKEN);
+  }
 });
 
 function uname_border_red() {
@@ -55,7 +60,24 @@ function validate_fields(username, password, mode) {
   }
 }
 
-async function check_jwt_valid(token) {}
+async function check_jwt_valid(token) {
+  const response = await fetch(`${API_URL}/user`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  response.json().then((data) => {
+    if (data.message === "ACCESS_DENIED") {
+      return Cookies.remove("jwt-token", {
+        path: "../",
+      });
+    } else {
+      return window.location.replace("pages/dashboard.html");
+    }
+  });
+}
 
 async function login(username, password) {
   const response = await fetch(`${API_URL}/login`, {
@@ -82,14 +104,49 @@ async function login(username, password) {
       case "LOGIN_SUCCESSFUL":
         Cookies.set("jwt-token", data.jwt, {
           expires: 14400,
-          path: "./",
+          path: "../",
         });
         alert("Login made successfully!");
         return window.location.replace("pages/dashboard.html");
       default:
-        return alert("A unexpected error occurred in the server.");
+        return alert(
+          "An internal error occurred, contact the web administrator quickly!",
+        );
     }
   });
 }
 
-async function register(username, password) {}
+async function register(username, password) {
+  const response = await fetch(`${API_URL}/user`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      username: username,
+      password: password,
+    }),
+  });
+
+  response.json().then((data) => {
+    switch (data.message) {
+      case "USER_ALREADY_EXISTS":
+        uname_border_red();
+        return alert("The provided username already exists!");
+      case "USERNAME_LENGTH_LIMIT_EXCEEDED":
+        uname_border_red();
+        return alert("The username must be smaller than 40 chars.");
+      case "PASSWORD_LENGTH_LIMIT_EXCEEDED":
+        password_border_red();
+        return alert("The password must be smaller than 127 chars.");
+      case "ACCOUNT_CREATED":
+        $("#uname-input").val("");
+        $("#pwd-input").val("");
+        return alert("Account created successfully!");
+      default:
+        return alert(
+          "An internal error occurred, contact the web administrator quickly!",
+        );
+    }
+  });
+}
