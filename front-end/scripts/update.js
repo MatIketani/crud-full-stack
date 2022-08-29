@@ -13,6 +13,10 @@ $(document).ready(() => {
     return window.location.replace("../index.html");
   }
 
+  if (!check_if_task_exists(task_id, jwt_token)) {
+    return window.location.replace("../pages/404.html");
+  }
+
   $("#edit-btn").click(() => {
     const title_value = $("#title-input").val();
     const description_value = $("#description-input").val();
@@ -36,6 +40,23 @@ $(document).ready(() => {
 
 function check_jwt_valid(token) {}
 
+async function check_if_task_exists(task_id, token) {
+  let response = await fetch(`${API_URL}/task/${task_id}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  response = await response.json();
+
+  if (response.message === "NOT_FOUND") {
+    return false;
+  }
+
+  return true;
+}
+
 async function execute_update(
   task_id,
   title_value,
@@ -43,6 +64,10 @@ async function execute_update(
   deadline_value,
   token,
 ) {
+  if (title_value === "" && description_value === "" && deadline_value === "") {
+    return alert("You need to fill at least one field!");
+  }
+
   let response = await fetch(`${API_URL}/task/${task_id}`, {
     method: "PATCH",
     headers: {
