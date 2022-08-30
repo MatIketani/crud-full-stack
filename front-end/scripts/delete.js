@@ -9,9 +9,11 @@ $(document).ready(() => {
 
   const jwt_token = Cookies.get("jwt-token");
 
-  if (!jwt_token || !check_jwt_valid(jwt_token)) {
+  if (!jwt_token) {
     return window.location.replace("../index.html");
   }
+
+  check_jwt_valid(jwt_token);
 
   execute_delete(task_id, jwt_token);
 });
@@ -26,10 +28,8 @@ async function check_jwt_valid(token) {
   response = await response.json();
 
   if (response.message === "ACCESS_DENIED") {
-    return false;
+    return window.location.replace("../index.html");
   }
-
-  return true;
 }
 
 async function execute_delete(task_id, token) {
@@ -46,7 +46,7 @@ async function execute_delete(task_id, token) {
       return window.location.replace("../pages/404.html");
     case "TASK_DELETED":
       alert("Task deleted successfully!");
-      return window.location.replace("../pages/dashboard.html");
+      return window.location.replace("../pages/tasks.html");
     default:
       return alert(
         "An internal error occurred, contact the web administrator quickly!",

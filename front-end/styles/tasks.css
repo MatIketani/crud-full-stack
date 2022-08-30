@@ -1,0 +1,20 @@
+body {
+  background-color: rgb(240, 240, 240);
+  width: 100%;
+}
+
+.container {
+  margin-top: 10%;
+  background-color: white;
+  width: 1000px;
+  height: fit-content;
+}
+
+#buttons {
+  display: flex;
+  justify-content: right;
+}
+
+#log-out-btn {
+  margin-left: 5px;
+}

@@ -1,12 +1,6 @@
 const API_URL = "http://localhost:3000";
 
 $(document).ready(() => {
-  const task_id = new URLSearchParams(location.search).get("id");
-
-  if (!task_id) {
-    window.location.replace("../pages/tasks.html");
-  }
-
   const jwt_token = Cookies.get("jwt-token");
 
   if (!jwt_token) {
@@ -14,15 +8,13 @@ $(document).ready(() => {
   }
 
   check_jwt_valid(jwt_token);
-  check_if_task_exists(task_id, jwt_token);
 
-  $("#save-btn").click(() => {
+  $("#create-btn").click(() => {
     const title_value = $("#title-input").val();
     const description_value = $("#description-input").val();
     const deadline_value = $("#deadline-input").val();
 
-    execute_update(
-      task_id,
+    return execute_creation(
       title_value,
       description_value,
       deadline_value,
@@ -30,7 +22,7 @@ $(document).ready(() => {
     );
   });
 
-  $("#back-btn").click(() => {
+  $("back-btn").click(() => {
     return window.location.replace("../pages/tasks.html");
   });
 });
@@ -49,38 +41,14 @@ async function check_jwt_valid(token) {
   }
 }
 
-async function check_if_task_exists(task_id, token) {
-  let response = await fetch(`${API_URL}/task/${task_id}`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  response = await response.json();
-
-  if (response.message === "NOT_FOUND") {
-    return window.location.replace("../pages/404.html");
-  }
-}
-
-async function execute_update(
-  task_id,
+async function execute_creation(
   title_value,
   description_value,
   deadline_value,
   token,
 ) {
-  if (title_value === "" && description_value === "" && deadline_value === "") {
-    return $("#update-form").append(`
-    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-      <strong>You must fill</strong> at least one field!
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    `);
-  }
-
-  let response = await fetch(`${API_URL}/task/${task_id}`, {
-    method: "PATCH",
+  let response = await fetch(`${API_URL}/task`, {
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
@@ -88,20 +56,20 @@ async function execute_update(
     body: JSON.stringify({
       title: title_value,
       description: description_value,
-      deadlineTime: deadline_value,
+      deadlineTime: new Date(deadline_value).toISOString(),
     }),
   });
   response = await response.json();
 
-  if (response.message === "TASK_UPDATED") {
-    return $("#update-form").append(`
+  if (response.message === "TASK_CREATED") {
+    return $("#create-form").append(`
     <div class="alert alert-success alert-dismissible fade show" role="alert">
-      <strong>The task id ${task_id} was updated successfully!</strong> You can go back to the task page and see the alterations by clicking on the back button!
+      <strong>The task id ${response.id} was created successfully!</strong> You can go back to the task page and see the new task by clicking on the back button!
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     `);
   } else {
-    return $("#update-form").append(`
+    return $("#create-form").append(`
     <div class="alert alert-danger d-flex align-items-center" role="alert">
       <div>
         The server may be off-line, <strong>contact the web-master immediately<strong>!
