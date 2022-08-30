@@ -22,7 +22,7 @@ $(document).ready(() => {
     );
   });
 
-  $("back-btn").click(() => {
+  $("#back-btn").click(() => {
     return window.location.replace("../pages/tasks.html");
   });
 });
