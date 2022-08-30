@@ -15,6 +15,7 @@ $(document).ready(() => {
 
   check_jwt_valid(jwt_token);
   check_if_task_exists(task_id, jwt_token);
+  get_task(task_id, jwt_token);
 
   $("#save-btn").click(() => {
     const title_value = $("#title-input").val();
@@ -61,6 +62,28 @@ async function check_if_task_exists(task_id, token) {
   if (response.message === "NOT_FOUND") {
     return window.location.replace("../pages/404.html");
   }
+}
+
+async function get_task(task_id, token) {
+  let response = await fetch(`${API_URL}/task/${task_id}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  response = await response.json();
+
+  var date = new Date(response.deadlineTime);
+
+  $("#title-input").val(response.title);
+  $("#description-input").val(response.description);
+  $("#deadline-input").val(
+    date.toLocaleDateString("en-CA", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }),
+  );
 }
 
 async function execute_update(
