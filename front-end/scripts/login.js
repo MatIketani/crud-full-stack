@@ -11,12 +11,20 @@ $(document).ready(() => {
     const username = $("#username-input").val();
     const password = $("#password-input").val();
 
+    if (username === "" || password === "") {
+      return;
+    }
+
     return signin(username, password);
   });
 
   $("#sign-up-btn").click(() => {
     const username = $("#username-input").val();
     const password = $("#password-input").val();
+
+    if (username === "" || password === "") {
+      return;
+    }
 
     return signup(username, password);
   });
