@@ -50,7 +50,7 @@ async function render_tasks(token) {
       <td>${
         task.deadlineTime
           ? new Date(task.deadlineTime).getTime() < Date.now()
-            ? new Date(task.deadlineTime).toLocaleDateString() + " (atrasado)"
+            ? new Date(task.deadlineTime).toLocaleDateString() + " (late)"
             : new Date(task.deadlineTime).toLocaleDateString()
           : "Empty"
       }</td>
